@@ -22,16 +22,58 @@ app.use(expressLayouts);
 app.set("layout", "./layouts/layout")
 
 /* ***********************
- * Static Files
+ * Static Files - Must be before routes
  *************************/
 app.use(express.static("public"));
+
+// Debug middleware for static files
+app.use((req, res, next) => {
+  if (req.url.startsWith('/images/') || req.url.startsWith('/css/') || req.url.startsWith('/js/')) {
+    console.log(`Static file request: ${req.url}`);
+  }
+  next();
+});
 
 /* ***********************
  * Routes
  *************************/
-app.use(static);
 app.get("/", utilities.handleErrors(baseController.buildHome));
-app.use("/inv", inventoryRoute)
+app.use("/inv", inventoryRoute);
+
+// Test route for debugging static files
+app.get("/test-images", (req, res) => {
+  const fs = require('fs');
+  const path = require('path');
+  
+  let fileList = '<h1>File Structure Debug</h1>';
+  
+  try {
+    const publicDir = path.join(__dirname, 'public');
+    const imagesDir = path.join(publicDir, 'images');
+    const vehiclesDir = path.join(imagesDir, 'vehicles');
+    
+    fileList += `<p>Public directory exists: ${fs.existsSync(publicDir)}</p>`;
+    fileList += `<p>Images directory exists: ${fs.existsSync(imagesDir)}</p>`;
+    fileList += `<p>Vehicles directory exists: ${fs.existsSync(vehiclesDir)}</p>`;
+    
+    if (fs.existsSync(vehiclesDir)) {
+      const files = fs.readdirSync(vehiclesDir);
+      fileList += `<p>Files in vehicles directory: ${files.join(', ')}</p>`;
+    }
+    
+    fileList += `
+      <h2>Image Test</h2>
+      <p>Testing if images load:</p>
+      <img src="/images/vehicles/delorean.jpg" alt="Delorean" style="width: 200px;">
+      <img src="/images/vehicles/batmobile.jpg" alt="Batmobile" style="width: 200px;">
+      <img src="/images/upgrades/flux-cap.png" alt="Flux Capacitor" style="width: 200px;">
+    `;
+  } catch (error) {
+    fileList += `<p>Error: ${error.message}</p>`;
+  }
+  
+  res.send(fileList);
+});
 
 app.use(async (req, res, next) => {
   next({
