@@ -22,6 +22,11 @@ app.use(expressLayouts);
 app.set("layout", "./layouts/layout")
 
 /* ***********************
+ * Static Files
+ *************************/
+app.use(express.static("public"));
+
+/* ***********************
  * Routes
  *************************/
 app.use(static);
