@@ -43,9 +43,9 @@ Util.buildClassificationGrid = async function (data) {
         " " +
         vehicle.inv_model +
         'details"><img src="' +
-        (vehicle.inv_thumbnail.startsWith('/images/vehicles/') 
-          ? vehicle.inv_thumbnail 
-          : '/images/vehicles/' + vehicle.inv_thumbnail.replace('/images/', '')) +
+        (vehicle.inv_image.startsWith('/images/vehicles/') 
+          ? vehicle.inv_image 
+          : '/images/vehicles/' + vehicle.inv_image.replace('/images/', '')) +
         '" alt="Image of ' +
         vehicle.inv_make +
         " " +
@@ -80,6 +80,26 @@ Util.buildClassificationGrid = async function (data) {
   }
   return grid;
 };
+
+Util.buildVehicleHtml = (vehicle) => {
+    return `
+      <div class="vehicle-detail">
+        <img src="${vehicle.inv_image}" alt="${vehicle.inv_make} ${
+      vehicle.inv_model
+    }">
+        <div class="vehicle-info">
+          <p><strong>Price:</strong> $${new Intl.NumberFormat("en-US").format(
+            vehicle.inv_price
+          )}</p>
+          <p><strong>Miles:</strong> ${new Intl.NumberFormat("en-US").format(
+            vehicle.inv_miles
+          )}</p>
+          <p><strong>Color:</strong> ${vehicle.inv_color}</p>
+          <p><strong>Description:</strong> ${vehicle.inv_description}</p>
+        </div>
+      </div>`;
+  };
+  
 
 Util.handleErrors = (fn) => (req, res, next) =>
     Promise.resolve(fn(req, res, next)).catch(next);

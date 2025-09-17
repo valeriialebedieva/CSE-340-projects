@@ -6,14 +6,6 @@ async function getClassifications() {
   );
 }
 
-async function getClassificationById(classification_id) {
-  const data = await pool.query(
-    "SELECT * FROM public.classification WHERE classification_id = $1 ORDER BY classification_name",
-    [classification_id]
-  );
-  return data.rows[0];
-}
-
 async function getInventoryByClassificationId(classification_id) {
     try {
       const data = await pool.query(
@@ -25,8 +17,42 @@ async function getInventoryByClassificationId(classification_id) {
       );
       return data.rows;
     } catch (error) {
-      console.error("getclassificationsbyid error " + error);
-    }
+      console.error("getInventoryByClassificationId error:", error);
   }
-  
-  module.exports = { getClassifications, getInventoryByClassificationId };
+}
+
+async function getInventoryById(inventory_id) {
+  try {
+    const data = await pool.query(
+      "SELECT * FROM public.inventory WHERE inv_id = $1",
+      [inventory_id]
+    );
+    if (data.rows.length === 0) {
+      return null; 
+    }
+    return data.rows[0]; 
+  } catch (error) {
+    console.error("getInventoryByClassificationId error:", error);
+  }
+}
+
+async function getInventoryById(inventory_id) {
+  try {
+    const data = await pool.query(
+      "SELECT * FROM public.inventory WHERE inv_id = $1",
+      [inventory_id]
+    );
+    if (data.rows.length === 0) {
+      return null; 
+    }
+    return data.rows[0]; 
+  } catch (error) {
+    console.error("getInventoryById error:", error);
+  }
+}
+
+module.exports = {
+    getClassifications,
+    getInventoryByClassificationId,
+    getInventoryById,
+  };

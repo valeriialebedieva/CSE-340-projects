@@ -37,4 +37,34 @@ invCont.buildByClassificationId = async function (req, res, next) {
       }
     };
 
+
+invCont.getInventoryById = async function (req, res, next) {
+    try {
+      const inventory_id = req.params.inventoryId;
+      const data = await invModel.getInventoryById(inventory_id);
+  
+      if (!data) {
+        return next({
+          status: 404,
+          message: "No inventory record found for the given ID.",
+        });
+      }
+  
+      const nav = await utilities.getNav();
+      const vehicleHtml = utilities.buildVehicleHtml(data);
+  
+      res.render("./inventory/vehicle", {
+        title: `${data.inv_make} ${data.inv_model} (${data.inv_year})`,
+        nav,
+        vehicleHtml,
+      });
+    } catch (error) {
+      console.error("Error in getInventoryById:", error);
+      next({
+        status: error.status || 500,
+        message: "Something went wrong while fetching inventory data.",
+      });
+    }
+  };
+
 module.exports = invCont;
