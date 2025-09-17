@@ -82,11 +82,12 @@ Util.buildClassificationGrid = async function (data) {
 };
 
 Util.buildVehicleHtml = (vehicle) => {
+    const imageSrc = vehicle.inv_image.startsWith('/images/vehicles/')
+      ? vehicle.inv_image
+      : '/images/vehicles/' + vehicle.inv_image.replace('/images/', '');
     return `
       <div class="vehicle-detail">
-        <img src="${vehicle.inv_image}" alt="${vehicle.inv_make} ${
-      vehicle.inv_model
-    }">
+        <img src="${imageSrc}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
         <div class="vehicle-info">
           <p><strong>Price:</strong> $${new Intl.NumberFormat("en-US").format(
             vehicle.inv_price
