@@ -1,4 +1,13 @@
-<% const d = new Date(); const year = d.getFullYear(); %>
 <footer>
-  <p class="copyright">&copy; <%= year %>, CSE 340 Project</p>
+    <p class="copyright">&copy; <%= new Date().getFullYear() %>, CSE 340 App</p>
+
+    <% if (locals.error) { %>
+    <div id="error-message" style="color: red">
+      <p><%= locals.error %></p>
+    </div>
+    <% } %>
+  
+    <p>
+      <a href="/error/trigger" style="color: red">500 error</a>
+    </p>
 </footer>

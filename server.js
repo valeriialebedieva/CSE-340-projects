@@ -13,6 +13,7 @@ const static = require("./routes/static")
 const inventoryRoute = require("./routes/inventoryRoute")
 const baseController = require("./controllers/baseController")
 const utilities = require("./utilities/index");
+const errorRoute = require("./routes/errorRoute"); 
 
 /* ***********************
  * View Engine 
@@ -38,7 +39,8 @@ app.use((req, res, next) => {
  * Routes
  *************************/
 app.get("/", utilities.handleErrors(baseController.buildHome));
-app.use("/inv", inventoryRoute);
+app.use("/inv", utilities.handleErrors(inventoryRoute));
+app.use("/error", utilities.handleErrors(errorRoute));
 
 // Test route for debugging static files
 app.get("/test-images", (req, res) => {
@@ -82,21 +84,6 @@ app.use(async (req, res, next) => {
   });
 });
 
-app.use(async (err, req, res, next) => {
-  let nav = await utilities.getNav();
-  console.error(`Error at: "${req.originalUrl}": ${err.message}`);
-  if (err.status == 404) {
-    message = err.message;
-  } else {
-    message = "Oh no! There was a crash. Maybe try a different route?";
-  }
-  res.render("errors/error", {
-    title: err.status || "Server Error",
-    message,
-    nav,
-  });
-});
-
 
 /* ***********************
  * Local Server Information
@@ -104,6 +91,19 @@ app.use(async (err, req, res, next) => {
  *************************/
 const port = process.env.PORT
 const host = process.env.HOST
+
+app.use(async (err, req, res, next) => {
+  let nav = await utilities.getNav();
+  console.error(`Error at "${req.originalUrl}": ${err.message}`);
+
+  res.locals.error = err.message || "Oh no! Something went wrong.";
+
+  res.render("errors/error", {
+    title: err.status || "Server Error",
+    message: res.locals.error,
+    nav,
+  });
+});
 
 /* ***********************
  * Log statement to confirm server operation
