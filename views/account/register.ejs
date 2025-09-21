@@ -1,0 +1,85 @@
+<h1 class="register-title"><%= title %></h1>
+
+<div class="form-container">
+  <% if (errors) { %>
+  <ul class="notice">
+    <% errors.array().forEach(error => { %>
+    <li><%= error.msg %></li>
+    <% }) %>
+  </ul>
+  <% } %>
+
+  <form id="registerForm" action="/account/register" method="POST">
+    <fieldset>
+      <p class="form-info">All fields are required</p>
+
+      <label for="account_firstname" class="register-label">First Name:</label>
+      <input
+        type="text"
+        id="account_firstname"
+        name="account_firstname"
+        class="register-input"
+        required
+        value="<%= locals.account_firstname %>" />
+
+      <label for="account_lastname" class="register-label">Last Name:</label>
+      <input
+        type="text"
+        id="account_lastname"
+        name="account_lastname"
+        class="register-input"
+        required
+        value="<%= locals.account_lastname %>" />
+
+      <label for="account_email" class="register-label">Email:</label>
+      <input
+        type="email"
+        id="account_email"
+        name="account_email"
+        class="register-input"
+        required
+        value="<%= locals.account_email %>" />
+
+      <label for="account_password" class="register-label">Password:</label>
+      <input
+        type="password"
+        id="account_password"
+        name="account_password"
+        class="register-input"
+        required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" />
+
+      <div class="password-requirements">
+        <i
+          >Passwords must be at least 12 characters long and include 1 capital
+          letter, 1 number, and 1 special character.</i
+        >
+      </div>
+      <button type="button" id="togglePassword" class="password-toggle">
+        Show Password
+      </button>
+
+      <button type="submit" class="register-button">REGISTER</button>
+    </fieldset>
+  </form>
+
+  <a href="/account/login" class="register-link"
+    >Already have an account? Log in</a
+  >
+</div>
+<script>
+  document
+    .getElementById("togglePassword")
+    .addEventListener("click", function () {
+      const passwordField = document.getElementById("account_password");
+      const toggleButton = document.getElementById("togglePassword");
+
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleButton.textContent = "Hide Password";
+      } else {
+        passwordField.type = "password";
+        toggleButton.textContent = "Show Password";
+      }
+    });
+</script>

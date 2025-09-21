@@ -23,10 +23,10 @@ invCont.buildByClassificationId = async function (req, res, next) {
         let nav = await utilities.getNav();
         const className = data[0].classification_name;
     
-        res.render("./inventory/classification", {
-          title: className + " vehicles",
+        res.render("layouts/layout", {
+            title: `${className} Vehicles`,
           nav,
-          grid,
+          body: grid,
         });
       } catch (error) {
         console.error("Error in buildByClassificationId:", error);
@@ -53,10 +53,10 @@ invCont.getInventoryById = async function (req, res, next) {
       const nav = await utilities.getNav();
       const vehicleHtml = utilities.buildVehicleHtml(data);
   
-      res.render("./inventory/vehicle", {
+      res.render("layouts/layout", {
         title: `${data.inv_make} ${data.inv_model} (${data.inv_year})`,
         nav,
-        vehicleHtml,
+        body: vehicleHtml,
       });
     } catch (error) {
       console.error("Error in getInventoryById:", error);
@@ -66,5 +66,91 @@ invCont.getInventoryById = async function (req, res, next) {
       });
     }
   };
+
+  invCont.renderManagementView = async function (req, res) {
+    const nav = await utilities.getNav();
+    const flashMessage = req.flash("info");
+  
+    res.render("layouts/layout", {
+      title: "Inventory Management",
+      nav,
+      body: utilities.buildManagementView(flashMessage),
+    });
+  };
+  
+  invCont.renderAddClassificationView = async function (req, res) {
+    const nav = await utilities.getNav();
+    const flashMessage = req.flash("error");
+    const formData = req.flash("formData")[0] || {}; // Retrieve stored form data
+  
+    res.render("layouts/layout", {
+      title: "Add New Classification",
+      nav,
+      body: utilities.buildAddClassificationView(flashMessage, formData),
+    });
+  };
+  
+  invCont.addClassification = async function (req, res, next) {
+    try {
+      const newClassification = await invModel.addClassification(
+        req.body.classification_name
+      );
+  
+      if (newClassification) {
+        req.flash("info", "Classification added successfully!");
+        return res.redirect("/inv/management");
+      } else {
+        req.flash("error", "Failed to add classification.");
+        return res.redirect("/inv/add-classification");
+      }
+    } catch (error) {
+      console.error("Error in addClassification:", error);
+      next({ status: 500, message: "Error adding classification." });
+    }
+  };
+  
+
+  invCont.renderAddInventoryView = async function (req, res) {
+    const nav = await utilities.getNav();
+    const flashMessage = req.flash("error");
+    const formData = req.flash("formData")[0] || {}; // Retrieve stored form data
+  
+    res.render("layouts/layout", {
+      title: "Add New Vehicle",
+      nav,
+      body: await utilities.buildAddInventoryView(flashMessage, formData),
+    });
+  };
+
+  invCont.addInventoryItem = async function (req, res, next) {
+    try {
+      const itemData = req.body; // Capture form input values
+      const newItem = await invModel.addInventoryItem(itemData);
+  
+      if (newItem) {
+        req.flash("info", "Vehicle added successfully!");
+        return res.redirect("/inv/management");
+      } else {
+        req.flash("error", "Failed to add vehicle.");
+        return res.render("layouts/layout", {
+          title: "Add New Vehicle",
+          nav: await utilities.getNav(),
+          body: await utilities.buildAddInventoryView(
+            req.flash("error"),
+            itemData
+          ),
+        });
+      }
+    } catch (error) {
+      console.error("Error in addInventoryItem:", error);
+      req.flash("error", "Error adding inventory item.");
+      return res.render("layouts/layout", {
+        title: "Add New Vehicle",
+        nav: await utilities.getNav(),
+        body: await utilities.buildAddInventoryView(req.flash("error"), req.body), // Preserve input
+      });
+    }
+  };
+  
 
 module.exports = invCont;

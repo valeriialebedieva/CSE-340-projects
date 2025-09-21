@@ -14,6 +14,10 @@ const inventoryRoute = require("./routes/inventoryRoute")
 const baseController = require("./controllers/baseController")
 const utilities = require("./utilities/index");
 const errorRoute = require("./routes/errorRoute"); 
+const session = require("express-session");
+const pool = require("./database/");
+const flash = require("connect-flash");
+const bodyParser = require("body-parser");
 
 /* ***********************
  * View Engine 
@@ -38,8 +42,32 @@ app.use((req, res, next) => {
 /* ***********************
  * Routes
  *************************/
+app.use(
+  session({
+    store: new (require("connect-pg-simple")(session))({
+      createTableIfMissing: true,
+      pool,
+    }),
+    secret: process.env.SESSION_SECRET,
+    resave: true,
+    saveUninitialized: true,
+    name: "sessionId",
+  })
+);
+
+// Express Messages Middleware
+app.use(flash());
+app.use(function (req, res, next) {
+  res.locals.messages = require("express-messages")(req, res);
+  next();
+});
+
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 app.get("/", utilities.handleErrors(baseController.buildHome));
 app.use("/inv", utilities.handleErrors(inventoryRoute));
+app.use("/account", require("./routes/accountRoute"));
 app.use("/error", utilities.handleErrors(errorRoute));
 
 // Test route for debugging static files
