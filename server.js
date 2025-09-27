@@ -8,6 +8,10 @@
 const express = require("express")
 const expressLayouts = require("express-ejs-layouts")
 const env = require("dotenv").config()
+const session = require("express-session");
+const flash = require("connect-flash");
+const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 const app = express()
 const static = require("./routes/static")
 const inventoryRoute = require("./routes/inventoryRoute")
@@ -56,14 +60,19 @@ app.use(
 );
 
 // Express Messages Middleware
-app.use(flash());
+app.use(require("connect-flash")());
 app.use(function (req, res, next) {
   res.locals.messages = require("express-messages")(req, res);
   next();
 });
 
+app.set("view engine", "ejs");
+app.use(expressLayouts);
+app.set("layout", "./layouts/layout");
+app.use(cookieParser());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(utilities.checkJWTToken);
 
 app.get("/", utilities.handleErrors(baseController.buildHome));
 app.use("/inv", utilities.handleErrors(inventoryRoute));

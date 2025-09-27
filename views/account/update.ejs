@@ -1,0 +1,115 @@
+<h1><%= title %></h1>
+
+<%- messages() %>
+
+<div class="form-container">
+  <% if (errors.length > 0) { %>
+  <ul class="notice">
+    <% errors.forEach(error => { %>
+    <li><%= error %></li>
+    <% }); %>
+  </ul>
+  <% } %>
+
+  <form
+    id="updateForm"
+    action="/account/update/<%= locals.accountData.account_id %>"
+    method="POST">
+    <fieldset>
+      <legend>Update Account Information</legend>
+
+      <p class="form-info">All fields are required.</p>
+
+      <label for="account_firstname" class="register-label">First Name:</label>
+      <input
+        type="text"
+        id="account_firstname"
+        name="account_firstname"
+        class="register-input"
+        required
+        value="<%= locals.accountData.account_firstname %>" />
+
+      <label for="account_lastname" class="register-label">Last Name:</label>
+      <input
+        type="text"
+        id="account_lastname"
+        name="account_lastname"
+        class="register-input"
+        required
+        value="<%= locals.accountData.account_lastname %>" />
+
+      <label for="account_email" class="register-label">Email:</label>
+      <input
+        type="email"
+        id="account_email"
+        name="account_email"
+        class="register-input"
+        required
+        value="<%= locals.accountData.account_email %>" />
+
+      <input
+        type="hidden"
+        name="account_id"
+        value="<%= locals.accountData.account_id %>" />
+
+      <button type="submit" class="register-button">Update Account</button>
+    </fieldset>
+  </form>
+
+  <form
+    id="passwordForm"
+    action="/account/update-password/<%= locals.accountData.account_id %>"
+    method="POST">
+    <fieldset>
+      <legend>Change Password</legend>
+
+      <p class="form-info">
+        Enter a new password to update your account security.
+      </p>
+
+      <label for="account_password" class="register-label">New Password:</label>
+      <input
+        type="password"
+        id="account_password"
+        name="account_password"
+        class="register-input"
+        required
+        pattern="^(?=.*\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[^a-zA-Z0-9])(?!.*\s).{12,}$" />
+
+      <div class="password-requirements">
+        <i>
+          Passwords must be at least 12 characters long and include 1 uppercase
+          letter, 1 number, and 1 special character.
+        </i>
+      </div>
+
+      <button type="button" id="togglePassword" class="password-toggle">
+        Show Password
+      </button>
+
+      <input
+        type="hidden"
+        name="account_id"
+        value="<%= locals.accountData.account_id %>" />
+
+      <button type="submit" class="register-button">Update Password</button>
+    </fieldset>
+  </form>
+</div>
+
+<script>
+  document
+    .getElementById("togglePassword")
+    .addEventListener("click", function () {
+      const passwordField = document.getElementById("account_password");
+      const toggleButton = document.getElementById("togglePassword");
+
+      if (passwordField.type === "password") {
+        passwordField.type = "text";
+        toggleButton.textContent = "Hide Password";
+      } else {
+        passwordField.type = "password";
+        toggleButton.textContent = "Show Password";
+      }
+    });
+</script>

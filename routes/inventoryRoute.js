@@ -3,6 +3,10 @@ const router = new express.Router();
 const invController = require("../controllers/invController");
 const utilities = require("../utilities/index");
 const {
+    verifyLoggedIn,
+    restrictedAccess,
+  } = require("../utilities/authMiddleware");
+const {
   validateInventory,
   validateClassification,
   handleValidationErrors,
@@ -20,16 +24,22 @@ router.get(
 
 router.get(
   "/management",
+  verifyLoggedIn, 
+  restrictedAccess,
   utilities.handleErrors(invController.renderManagementView)
 );
 
 router.get(
   "/add-classification",
+  verifyLoggedIn, 
+  restrictedAccess,
   utilities.handleErrors(invController.renderAddClassificationView)
 );
 
 router.post(
   "/classification",
+  verifyLoggedIn, 
+  restrictedAccess,
   validateClassification,
   handleValidationErrors,
   utilities.handleErrors(invController.addClassification)
@@ -37,11 +47,15 @@ router.post(
 
 router.get(
   "/add-inventory",
+  verifyLoggedIn, 
+  restrictedAccess,
   utilities.handleErrors(invController.renderAddInventoryView)
 );
 
 router.post(
   "/add",
+  verifyLoggedIn, 
+  restrictedAccess,
   validateInventory,
   handleValidationErrors,
   utilities.handleErrors(invController.addInventoryItem)
