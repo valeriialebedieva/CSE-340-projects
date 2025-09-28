@@ -18,10 +18,7 @@ const inventoryRoute = require("./routes/inventoryRoute")
 const baseController = require("./controllers/baseController")
 const utilities = require("./utilities/index");
 const errorRoute = require("./routes/errorRoute"); 
-const session = require("express-session");
 const pool = require("./database/");
-const flash = require("connect-flash");
-const bodyParser = require("body-parser");
 
 /* ***********************
  * View Engine 
@@ -35,7 +32,6 @@ app.set("layout", "./layouts/layout")
  *************************/
 app.use(express.static("public"));
 
-// Debug middleware for static files
 app.use((req, res, next) => {
   if (req.url.startsWith('/images/') || req.url.startsWith('/css/') || req.url.startsWith('/js/')) {
     console.log(`Static file request: ${req.url}`);
