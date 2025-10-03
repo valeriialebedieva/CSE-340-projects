@@ -1,0 +1,34 @@
+<table class="vehicle-table">
+  <thead>
+    <tr>
+      <th>Make</th>
+      <th>Model</th>
+      <th>Year</th>
+      <th>Price</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% if (vehicles && vehicles.length > 0) { %> <% vehicles.forEach(vehicle =>
+    { %>
+    <tr>
+      <td><%= vehicle.inv_make %></td>
+      <td><%= vehicle.inv_model %></td>
+      <td><%= vehicle.inv_year %></td>
+      <td>$<%= new Intl.NumberFormat("en-US").format(vehicle.inv_price) %></td>
+      <td>
+        <a href="/inv/edit/<%= vehicle.inv_id %>" class="btn edit-btn">Edit</a>
+        <a href="/inv/delete/<%= vehicle.inv_id %>" class="btn delete-btn"
+          >Delete</a
+        >
+      </td>
+    </tr>
+    <% }); %> <% } else { %>
+    <tr>
+      <td colspan="5">No vehicles found.</td>
+    </tr>
+    <% } %>
+  </tbody>
+</table>
+
+<div class="pagination"><%- paginationHtml %></div>

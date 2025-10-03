@@ -195,7 +195,7 @@ Util.buildClassificationGrid = async function (data) {
   return grid;
 };
 
-Util.buildVehicleHtml = (vehicle) => {
+Util.buildVehicleHtml = function (vehicle, accountData = {}) {
     const imageSrc = vehicle.inv_image.startsWith('/images/vehicles/')
       ? vehicle.inv_image
       : '/images/vehicles/' + vehicle.inv_image.replace('/images/', '');
@@ -203,6 +203,7 @@ Util.buildVehicleHtml = (vehicle) => {
       <div class="vehicle-detail">
         <img src="${imageSrc}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
         <div class="vehicle-info">
+          <h2 class="detail-h2">${vehicle.inv_model}</h2>
           <p><strong>Price:</strong> $${new Intl.NumberFormat("en-US").format(
             vehicle.inv_price
           )}</p>
@@ -212,6 +213,19 @@ Util.buildVehicleHtml = (vehicle) => {
           <p><strong>Color:</strong> ${vehicle.inv_color}</p>
           <p><strong>Description:</strong> ${vehicle.inv_description}</p>
         </div>
+         ${
+        accountData.account_type &&
+        (accountData.account_type === "Employee" ||
+          accountData.account_type === "Admin")
+          ? `
+          <div class="vehicle-actions">
+            <a href="/inv/edit/${vehicle.inv_id}" class="edit-button">Edit</a>
+            <br></br>
+            <a href="/inv/delete/${vehicle.inv_id}" class="delete-button">Delete</a>
+          </div>
+          `
+          : ""
+      }
       </div>`;
   };
   
@@ -238,6 +252,103 @@ Util.checkJWTToken = (req, res, next) => {
     } else {
       next();
     }
+  };
+
+  Util.buildEditInventoryView = async function (
+    flashMessage = "",
+    itemData = {}
+  ) {
+    let classificationList = await Util.buildClassificationList(
+      itemData.classification_id
+    );
+  
+    // Ensure flashMessage is treated properly
+    const flashMessages =
+      Array.isArray(flashMessage) && flashMessage.length > 0
+        ? flashMessage
+        : null;
+  
+    return `
+      <div class="form-container">
+        <h1>Edit Inventory Item</h1>
+        ${
+          flashMessages
+            ? `<div class="flash-message"><ul>${flashMessages
+                .map((msg) => `<li>${msg}</li>`)
+                .join("")}</ul></div>`
+            : ""
+        }
+  
+        <form id="updateForm" action="/inv/update" method="POST">
+          <input type="hidden" name="inv_id" value="${itemData.inv_id}">
+  
+          <label for="classification_id" class="login-label">Vehicle Classification:</label>
+          ${classificationList}
+  
+          <label for="inv_make" class="login-label">Make:</label>
+          <input type="text" id="inv_make" name="inv_make" class="login-input" required value="${
+            itemData.inv_make || ""
+          }">
+  
+          <label for="inv_model" class="login-label">Model:</label>
+          <input type="text" id="inv_model" name="inv_model" class="login-input" required value="${
+            itemData.inv_model || ""
+          }">
+  
+          <label for="inv_year" class="login-label">Year:</label>
+          <input type="number" id="inv_year" name="inv_year" class="login-input" required min="1900" value="${
+            itemData.inv_year || ""
+          }">
+  
+          <label for="inv_price" class="login-label">Price:</label>
+          <input type="number" id="inv_price" name="inv_price" class="login-input" required value="${
+            itemData.inv_price || ""
+          }">
+  
+          <label for="inv_miles" class="login-label">Miles:</label>
+          <input type="number" id="inv_miles" name="inv_miles" class="login-input" required value="${
+            itemData.inv_miles || ""
+          }">
+  
+          <label for="inv_color" class="login-label">Color:</label>
+          <input type="text" id="inv_color" name="inv_color" class="login-input" required value="${
+            itemData.inv_color || ""
+          }">
+  
+          <label for="inv_description" class="login-label">Description:</label>
+          <textarea id="inv_description" name="inv_description" class="login-input" required>${
+            itemData.inv_description || ""
+          }</textarea>
+  
+          <label for="inv_image" class="login-label">Vehicle Image (URL):</label>
+          <input type="text" id="inv_image" name="inv_image" class="login-input" required value="${
+            itemData.inv_image || ""
+          }">
+  
+          <label for="inv_thumbnail" class="login-label">Thumbnail Image (URL):</label>
+          <input type="text" id="inv_thumbnail" name="inv_thumbnail" class="login-input" required value="${
+            itemData.inv_thumbnail || ""
+          }">
+  
+          <button type="submit" class="login-button">Update Vehicle</button>
+        </form>
+      </div>
+    `;
+  };
+
+  Util.buildPagination = function (totalPages, currentPage) {
+    let paginationHtml = `<div class="pagination">`;
+  
+    for (let page = 1; page <= totalPages; page++) {
+      paginationHtml += `
+        <a href="/dashboard?page=${page}" class="pagination-link ${
+        page === currentPage ? "active" : ""
+      }">${page}</a>
+      `;
+    }
+  
+    paginationHtml += `</div>`;
+    return paginationHtml;
   };
   
   module.exports = Util;

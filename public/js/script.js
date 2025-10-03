@@ -14,3 +14,9 @@ document.addEventListener("DOMContentLoaded", function () {
         navMenu.classList.toggle("show-nav");
     });
 });
+
+const form = document.getElementById("updateForm");
+form.addEventListener("change", function () {
+  const updateBtn = document.querySelector("button");
+  updateBtn.removeAttribute("disabled");
+});

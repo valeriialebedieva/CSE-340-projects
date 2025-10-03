@@ -1,0 +1,16 @@
+<h1><%= title %></h1>
+
+<div class="form-container">
+  <p>Confirm Deletion - This action is **permanent** and cannot be undone.</p>
+
+  <form action="/inv/delete" method="POST">
+    <input type="hidden" name="inv_id" value="<%= locals.inv_id %>" />
+
+    <h2>Make:<%= locals.inv_make %>" </h2>
+
+    <h2>Model: <%= locals.inv_model %> </h2>
+
+    <br></br>
+    <button type="submit" class="delete-button">Delete Vehicle</button>
+  </form>
+</div>

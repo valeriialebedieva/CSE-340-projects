@@ -1,0 +1,9 @@
+<h1><%= title %></h1>
+
+<% if (locals.body) { %> <%- body %> <% } else { %>
+<p>Inventory details not found.</p>
+<% } %>
+
+<% if (locals.inv_id) { %>
+<input type="hidden" name="inv_id" value="<%= locals.inv_id %>" />
+<% } %>

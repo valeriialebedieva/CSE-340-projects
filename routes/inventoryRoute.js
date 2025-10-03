@@ -24,22 +24,22 @@ router.get(
 
 router.get(
   "/management",
-  verifyLoggedIn, 
-  restrictedAccess,
+  //verifyLoggedIn, 
+  //restrictedAccess,
   utilities.handleErrors(invController.renderManagementView)
 );
 
 router.get(
   "/add-classification",
-  verifyLoggedIn, 
-  restrictedAccess,
+  //verifyLoggedIn, 
+  //restrictedAccess,
   utilities.handleErrors(invController.renderAddClassificationView)
 );
 
 router.post(
   "/classification",
-  verifyLoggedIn, 
-  restrictedAccess,
+  //verifyLoggedIn, 
+  //restrictedAccess,
   validateClassification,
   handleValidationErrors,
   utilities.handleErrors(invController.addClassification)
@@ -47,18 +47,55 @@ router.post(
 
 router.get(
   "/add-inventory",
-  verifyLoggedIn, 
-  restrictedAccess,
+  //verifyLoggedIn, 
+  //restrictedAccess,
   utilities.handleErrors(invController.renderAddInventoryView)
 );
 
 router.post(
   "/add",
-  verifyLoggedIn, 
-  restrictedAccess,
+  //verifyLoggedIn, 
+  //restrictedAccess,
   validateInventory,
   handleValidationErrors,
   utilities.handleErrors(invController.addInventoryItem)
 );
+
+router.get(
+    "/edit/:inventoryId",
+    //verifyLoggedIn,
+    //restrictedAccess,
+    utilities.handleErrors(invController.editInventoryView)
+  );
+  
+  router.post(
+    "/update",
+    //verifyLoggedIn,
+    //restrictedAccess,
+    validateInventory, 
+    handleValidationErrors,
+    utilities.handleErrors(invController.updateInventory) 
+  );
+  
+  router.get(
+    "/delete/:inventoryId",
+    //verifyLoggedIn,
+    //restrictedAccess,
+    utilities.handleErrors(invController.deleteInventoryView)
+  );
+  
+  router.post(
+    "/delete",
+    //verifyLoggedIn,
+    //restrictedAccess,
+    utilities.handleErrors(invController.deleteInventory)
+  );
+
+  router.get(
+    "/inventories",
+    //verifyLoggedIn,
+    //restrictedAccess,
+    utilities.handleErrors(invController.renderDashboard)
+  );
 
 module.exports = router;
